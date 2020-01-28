@@ -13,40 +13,47 @@ class BooksApp extends React.Component {
     read: 'read',
 };
   state = {
-    /**
-     * TODO: Instead of using this state variable to keep track of which page
-     * we're on, use the URL in the browser's address bar. This will ensure that
-     * users can use the browser's back and forward buttons to navigate between
-     * pages, as well as provide a good URL they can bookmark and share.
-     */
     books:[],
-    currentlyReadingList:[],
-    wantToReadList:[],
-    readList:[],
-    showSearchPage: false
+    booksSearchResult:[]
   }
   componentDidMount() {
     BooksAPI.getAll()
       .then((books) => {
         this.setState(() => ({
-          books,
-          currentlyReadingList:books.filter(s=>s.shelf === this.CategoryEnum.currentlyReading ),
-          wantToReadList:books.filter(s=>s.shelf === this.CategoryEnum.wantToRead ),
-          readList:books.filter(s=>s.shelf === this.CategoryEnum.read )
+          books
         }))
       })
     }
     handleShelfChange = (book,shelf)=>
     {
-     BooksAPI.update(book,shelf).then((result)=>{
-      this.setState((currentState) => ({
-        currentlyReadingList:currentState.books.filter(s=>(result.currentlyReading.includes(s.id))),
-        wantToReadList:currentState.books.filter(s=>(result.wantToRead.includes(s.id))),
-        readList:currentState.books.filter(s=>(result.read.includes(s.id)))
-      }))
-       console.log(result);
-     });
+      book.shelf = shelf;
+      BooksAPI.update(book, shelf);
+      if (shelf === 'none') {
+        this.setState(prevState => ({
+          books: prevState.books.filter(b => b.id !== book.id)
+        }));
+      } else {
+        this.setState(prevState => ({
+          books: prevState.books.filter(b => b.id !== book.id).concat(book)
+        }));
     }
+    }
+    search=(queryInput)=>{
+      BooksAPI.search(queryInput.trim()).then((result) => {
+          if(result != undefined)
+          {
+          this.setState(()=>({
+              booksSearchResult:[...result],
+          }))
+      }
+      else 
+      {
+        this.setState(()=>({
+          booksSearchResult:[],
+      }))
+      }
+      })
+  }
   render() {
     return (
       <div>
@@ -58,9 +65,9 @@ class BooksApp extends React.Component {
             </div>
             <div className="list-books-content">
               <div>
-              <ShelfComponent books={this.state.currentlyReadingList} shelfChange={this.handleShelfChange} title="Currently Reading" />
-              <ShelfComponent books={this.state.wantToReadList} shelfChange={this.handleShelfChange} title="Want To Read" />
-              <ShelfComponent books={this.state.readList} shelfChange={this.handleShelfChange} title="Read" />
+              <ShelfComponent books={this.state.books.filter(s=>s.shelf ===  this.CategoryEnum.currentlyReading)} shelfChange={this.handleShelfChange} title="Currently Reading" />
+              <ShelfComponent books={this.state.books.filter(s=>s.shelf ===  this.CategoryEnum.wantToRead)} shelfChange={this.handleShelfChange} title="Want To Read" />
+              <ShelfComponent books={this.state.books.filter(s=>s.shelf ===  this.CategoryEnum.read)} shelfChange={this.handleShelfChange} title="Read" />
               </div>
             </div>
            <div className="open-search">
@@ -72,8 +79,8 @@ class BooksApp extends React.Component {
         )}
       </div>
          </Route>
-         <Route path='/search' render={({ history }) => (
-         <BookSearch shelfChange={this.handleShelfChange}/>
+         <Route path='/search' render={() => (
+         <BookSearch shelfChange={this.handleShelfChange} handleSearch={this.search} searchedBooks={this.state.booksSearchResult} mybooks={this.state.books}/>
         )} />
       </div>
     )

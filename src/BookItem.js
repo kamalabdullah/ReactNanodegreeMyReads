@@ -9,10 +9,12 @@ class BookItem extends React.Component {
         <div className="book">
           <div className="book-top">
             <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>
-            <ShelfChanger book={book} shelfChange={shelfChange}/>
+            <ShelfChanger book={book} shelfChange={shelfChange} shelf={book.shelf}/>
           </div>
         <div className="book-title">{book.title}</div>
-          {book.authors.map((auth)=>(  <div  className="book-authors">{auth}</div>))}
+        <div className="book-authors">
+        {book.authors ? book.authors.join(', ') : 'Unknown Author'}
+       </div>
         </div>
       </li>
         )

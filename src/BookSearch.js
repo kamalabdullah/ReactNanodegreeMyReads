@@ -5,26 +5,28 @@ import BookItem from './BookItem'
 import { Link } from 'react-router-dom';
 
 class BookSearch extends React.Component {
-    search=(queryInput)=>{
-        this.setState(()=>({
-            query:queryInput.trim()
-        }));
-        BooksAPI.search(queryInput.trim()).then((result) => {
-            if(result != undefined)
-            {
-            this.setState(()=>({
-                booksResult:[...result],
-            }))
-        }
-        })
-    }
+   
     state={
-        query:"",
-        booksResult:[]
+        query:""
     }
+    search = (queryParam)=>{
+        this.setState(()=>({
+            query:queryParam.trim()
+        }));
+        this.props.handleSearch(queryParam);
+    }
+
     render(){
-        const {shelfChange} = this.props;
-       const books = this.state.booksResult;
+        const {shelfChange,handleSearch,searchedBooks,mybooks} = this.props;
+       const books = searchedBooks.map(book => {
+        mybooks.map(b => {
+          if (b.id === book.id) {
+            book.shelf = b.shelf;
+          }
+          return b;
+        });
+        return book;
+      });
         return(
             <div className="search-books">
             <div className="search-books-bar">
@@ -37,10 +39,10 @@ class BookSearch extends React.Component {
             </div>
             <div className="search-books-results">
                     <ol className="books-grid"> 
-                      {(books != undefined && books.length>0) &&(
-                      books.map((book)=>(
+                    {books.map(book =>(
                        <BookItem key={book.id} book={book} shelfChange={shelfChange}/>
-                     )))}
+                     ))
+                      }
                     </ol>
             </div>
           </div>

@@ -9,33 +9,19 @@ class ShelfChanger extends React.Component {
     {value:"none",label:"None"}
     ]
     render(){
-        const {book,shelfChange} = this.props;
-        const defultValue = this.options.filter(s=>s.value == book.shelf);
+        const {book,shelfChange,shelf} = this.props;
         return(
             <div className="book-shelf-changer">
-            {/* <Select
-                options={this.options}
-                value={this.options.map(s=>s.value)}
-                onChange={(event)=>shelfChange(book,event.target.value)}
-                defaultValue={defultValue}
-            /> */}
-            <select key={book.id} onChange={(event)=>shelfChange(book,event.target.value)}>
-              <option value="move" disabled>Move to...</option>
-              {
-                  this.options.map((option)=>(
-                    book.shelf ===  option.value &&(
-                      <option value={option.value} key={option.value} selected>{option.label}</option>
-                    )))
-            }
-               {
-                  this.options.map((option)=>(
-                    book.shelf !==  option.value &&(
-                      <option key={option.value} value={option.value}>{option.label}</option>
-                    )
-                  ))
-              } 
-            </select>
-          </div>
+                <select value={shelf === undefined?"none" : shelf} onChange={(event)=>shelfChange(book,event.target.value)}>
+                <option value="move" disabled>
+                    Move to...
+                </option>
+                <option value="currentlyReading">Currently Reading</option>
+                <option value="wantToRead">Want to Read</option>
+                <option value="read">Read</option>
+                <option value="none">None</option>
+                </select>
+            </div>
         )
     }
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import ShelfChanger from './ShelfChanger'
+import BookItem from './BookItem'
 class ShelfComponent extends React.Component {
     render(){
         const {books,shelfChange,title} = this.props;
@@ -10,16 +11,7 @@ class ShelfComponent extends React.Component {
                   <div className="bookshelf-books">
                     <ol className="books-grid">
                      {Read.map((book)=>(
-                         <li key={book.id}>
-                         <div className="book">
-                           <div className="book-top">
-                             <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>
-                             <ShelfChanger book={book} shelfChange={shelfChange}/>
-                           </div>
-                         <div className="book-title">{book.title}</div>
-                           {book.authors.map((auth)=>(  <div className="book-authors">{auth}</div>))}
-                         </div>
-                       </li>
+                      <BookItem key={book.id} book={book} shelfChange={shelfChange}/>
                      )
                      )}
                     </ol>
