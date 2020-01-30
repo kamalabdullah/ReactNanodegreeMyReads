@@ -3,30 +3,40 @@ import * as BooksAPI from './BooksAPI'
 import ShelfChanger from './ShelfChanger'
 import BookItem from './BookItem'
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types'
 
 class BookSearch extends React.Component {
-   
+    static propTypes = {
+        shelfChange: PropTypes.func.isRequired,
+        handleSearch: PropTypes.func.isRequired,
+        searchedBooks:PropTypes.array.isRequired,
+        mybooks:PropTypes.array.isRequired
+      }
     state={
         query:""
     }
     search = (queryParam)=>{
         this.setState(()=>({
-            query:queryParam.trim()
+            query:queryParam
         }));
         this.props.handleSearch(queryParam);
     }
 
     render(){
-        const {shelfChange,handleSearch,searchedBooks,mybooks} = this.props;
-       const books = searchedBooks.map(book => {
-        mybooks.map(b => {
-          if (b.id === book.id) {
-            book.shelf = b.shelf;
-          }
-          return b;
-        });
-        return book;
-      });
+        const {shelfChange,handleSearch,searchedBooks,mybooks,emptyResultCheck} = this.props;
+        var books = [];
+        if(!emptyResultCheck)
+        {
+            books = searchedBooks.map(book => {
+                mybooks.map(b => {
+                if (b.id === book.id) {
+                    book.shelf = b.shelf;
+                }
+                return b;
+                });
+                return book;
+            });
+        }
         return(
             <div className="search-books">
             <div className="search-books-bar">
@@ -39,10 +49,11 @@ class BookSearch extends React.Component {
             </div>
             <div className="search-books-results">
                     <ol className="books-grid"> 
-                    {books.map(book =>(
+                     {!emptyResultCheck ? (
+                    books.map(book =>(
                        <BookItem key={book.id} book={book} shelfChange={shelfChange}/>
                      ))
-                      }
+                    ):(<div>No data Items</div>)}
                     </ol>
             </div>
           </div>

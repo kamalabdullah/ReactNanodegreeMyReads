@@ -1,7 +1,12 @@
 import React from 'react';
-import Select from 'react-select';
+import PropTypes from 'prop-types'
 
 class ShelfChanger extends React.Component {
+    static propTypes = {
+        book: PropTypes.object.isRequired,
+        shelfChange: PropTypes.func.isRequired,
+        shelf:PropTypes.string,
+      }
     options = [
     {value:"currentlyReading",label:"Currently Reading"},
     {value:"wantToRead",label:"Want to Read"},

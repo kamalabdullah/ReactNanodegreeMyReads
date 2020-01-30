@@ -14,13 +14,15 @@ class BooksApp extends React.Component {
 };
   state = {
     books:[],
-    booksSearchResult:[]
+    booksSearchResult:[],
+    emptyResult:true
   }
   componentDidMount() {
     BooksAPI.getAll()
       .then((books) => {
         this.setState(() => ({
-          books
+          books,
+          booksSearchResult:[]
         }))
       })
     }
@@ -40,16 +42,18 @@ class BooksApp extends React.Component {
     }
     search=(queryInput)=>{
       BooksAPI.search(queryInput.trim()).then((result) => {
-          if(result != undefined)
+          if(result != undefined && result.error == undefined)
           {
           this.setState(()=>({
               booksSearchResult:[...result],
+              emptyResult:false
           }))
       }
       else 
       {
         this.setState(()=>({
           booksSearchResult:[],
+          emptyResult:true
       }))
       }
       })
@@ -80,7 +84,7 @@ class BooksApp extends React.Component {
       </div>
          </Route>
          <Route path='/search' render={() => (
-         <BookSearch shelfChange={this.handleShelfChange} handleSearch={this.search} searchedBooks={this.state.booksSearchResult} mybooks={this.state.books}/>
+         <BookSearch shelfChange={this.handleShelfChange} handleSearch={this.search} searchedBooks={this.state.booksSearchResult} mybooks={this.state.books} emptyResultCheck={this.state.emptyResult}/>
         )} />
       </div>
     )
